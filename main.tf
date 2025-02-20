@@ -17,12 +17,17 @@ resource "null_resource" "install_harness_delegate" {
 
   provisioner "local-exec" {
     command = <<EOT
-      gcloud container clusters get-credentials ${var.cluster_name} --region ${var.region} --project ${var.project_id}
+      export PATH=$PATH:/usr/local/bin:/usr/bin:/snap/bin
 
-      helm repo add harness-delegate https://app.harness.io/storage/harness-download/delegate-helm-chart/
-      helm repo update harness-delegate
+      # Fetch Kubernetes credentials
+      $(which gcloud) container clusters get-credentials ${var.cluster_name} --region ${var.region} --project ${var.project_id}
 
-      helm upgrade -i helm-delegate --namespace harness-delegate-ng --create-namespace \
+      # Add and update Helm repository
+      $(which helm) repo add harness-delegate https://app.harness.io/storage/harness-download/delegate-helm-chart/
+      $(which helm) repo update harness-delegate
+
+      # Deploy Harness Delegate using Helm
+      $(which helm) upgrade -i helm-delegate --namespace harness-delegate-ng --create-namespace \
       harness-delegate/harness-delegate-ng \
       --set delegateName=helm-delegate \
       --set accountId=ucHySz2jQKKWQweZdXyCog \

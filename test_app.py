@@ -9,7 +9,6 @@ class FlaskAppTestCase(unittest.TestCase):
         self.client = app.test_client()
         self.client.testing = True
 
-
     # Test the '/' route
     def test_hello(self):
         response = self.client.get('/')
